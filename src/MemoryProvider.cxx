@@ -5,8 +5,9 @@
 
 struct MemoryProvider::SharedInfo
 {
-    const LogLevel minLevel;
-    const int numLines;
+    LogLevel minLevel;
+    int numLines;
+
     std::deque<std::string> logLines;
 };
 
@@ -49,8 +50,10 @@ public:
 
 
 MemoryProvider::MemoryProvider(int numLines, LogLevel minLevel)
-    : _sharedInfo(std::make_shared<SharedInfo>(minLevel, numLines, std::deque<std::string>{}))
+    : _sharedInfo(std::make_shared<SharedInfo>())
 {
+    _sharedInfo->minLevel = minLevel;
+    _sharedInfo->numLines = numLines;
 }
 
 std::vector<std::string> MemoryProvider::LogLines()

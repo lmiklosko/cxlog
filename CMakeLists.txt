@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.12)
 
-project(CXLog
+project(cxlog
         VERSION 0.0.1
         DESCRIPTION "Highly configurable logging utility for c++"
         HOMEPAGE_URL ""
@@ -24,8 +24,7 @@ target_include_directories(${PROJECT_NAME}
     PUBLIC
         include/
 )
-set_property(TARGET ${PROJECT_NAME} PROPERTY CXX_STANDARD 20)
-set_property(TARGET ${PROJECT_NAME} PROPERTY CXX_STANDARD_REQUIRED True)
+set_property(TARGET ${PROJECT_NAME} PROPERTY CXX_STANDARD 17)
 
 if (ENABLE_PROVIDER_ANDROID)
     if (NOT ANDROID)

@@ -126,10 +126,10 @@ TEST_F(MemoryProviderTest, LogLines_Overflow)
 
     /*Assert*/
     EXPECT_EQ(logLines.size(), 10);
-    EXPECT_EQ(std::ranges::find_if(logLines, containsMessage(message + "0")), logLines.end());
-    EXPECT_EQ(std::ranges::find_if(logLines, containsMessage(message + "9")), logLines.end());
-    EXPECT_NE(std::ranges::find_if(logLines, containsMessage(message + "10")), logLines.end());
-    EXPECT_NE(std::ranges::find_if(logLines, containsMessage(message + "19")), logLines.end());
+    EXPECT_EQ(std::find_if(logLines.begin(), logLines.end(), containsMessage(message + "0")), logLines.end());
+    EXPECT_EQ(std::find_if(logLines.begin(), logLines.end(), containsMessage(message + "9")), logLines.end());
+    EXPECT_NE(std::find_if(logLines.begin(), logLines.end(), containsMessage(message + "10")), logLines.end());
+    EXPECT_NE(std::find_if(logLines.begin(), logLines.end(), containsMessage(message + "19")), logLines.end());
 }
 
 /**
