@@ -7,7 +7,7 @@ struct AndroidProvider::SharedData
     LogLevel _minLevel;
 };
 
-class AndroidLogger : ILogger
+class AndroidLogger : public ILogger
 {
 public:
     AndroidLogger(std::string name, std::shared_ptr<AndroidProvider::SharedData> info)
@@ -16,8 +16,7 @@ public:
     {
     }
 
-    void Log(LogLevel level, const std::string &message, const std::map<std::string, std::string>& props,
-             std::source_location location) override
+    void Log(LogLevel level, const std::string &message, const std::map<std::string, std::string>& props) override
     {
         std::ostringstream ss;
 
@@ -31,7 +30,7 @@ public:
         __android_log_write(LogLevelToAndroidLevel(level), _name.c_str(), str.c_str());
     }
 
-    bool IsEnabled(LogLevel level) const noexcept override
+    [[nodiscard]] bool IsEnabled(LogLevel level) const noexcept override
     {
         return level >= _info->_minLevel;
     }
@@ -54,8 +53,9 @@ private:
 };
 
 AndroidProvider::AndroidProvider(LogLevel minLevel)
-    : _data(std::make_shared<SharedData>(minLevel))
+    : _data(std::make_shared<SharedData>())
 {
+    _data->_minLevel = minLevel;
 }
 
 std::shared_ptr<ILogger> AndroidProvider::GetLogger(const std::string &name)
@@ -67,4 +67,9 @@ std::shared_ptr<ILogger> AndroidProvider::GetLogger(const std::string &name)
     }
 
     return l;
+}
+
+std::string_view AndroidProvider::GetName() const
+{
+    return "AndroidProvider";
 }

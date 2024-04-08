@@ -1,8 +1,6 @@
 #pragma once
-
+#include <sstream>
 #include <string>
-#include <source_location>
-#include <experimental/source_location>
 #include <map>
 
 /**
@@ -36,6 +34,40 @@ static constexpr const char* to_string(LogLevel level) noexcept
     return "";
 }
 
+namespace details
+{
+    template <class T, template <class...> class Template>
+    struct is_specialization : std::false_type {};
+
+    template <template <class...> class Template, class... Args>
+    struct is_specialization<Template<Args...>, Template> : std::true_type {};
+
+    struct Props
+    {
+        std::map<std::string, std::string> mapped;
+
+        template<typename... Args, typename = std::enable_if_t<sizeof...(Args) != 0 && (is_specialization<Args, std::pair>{} || ...)>>
+        Props(Args&& ...args) // NOLINT(*-explicit-constructor)
+        {
+            expo(std::forward<Args>(args)...);
+        }
+
+        template<typename T, typename...Args>
+        void expo(T&& value, Args&&...others)
+        {
+            std::stringstream ss;
+            ss << value.second;
+
+            mapped[value.first] = ss.str();
+            expo(std::forward<Args>(others)...);
+        }
+
+        void expo()
+        {
+        }
+    };
+}
+
 /**
  * @brief Interface for logging
  *
@@ -65,4 +97,27 @@ public:
      */
     [[nodiscard]]
     virtual bool IsEnabled(LogLevel level) const noexcept = 0;
+
+    void Log(LogLevel level, const std::string& message, details::Props&& props)
+    {
+        Log(level, message, props.mapped);
+    }
+
+    template<typename... Args>
+    void Logc(LogLevel level, const std::string& message, Args&&...args)
+    {
+        std::stringstream ss;
+        ((ss << args << " ") << ...);
+
+        Log(level, message + ss.str());
+    }
+
+    template<typename... Args>
+    void Logf(LogLevel level, const std::string& format, Args&& ...args)
+    {
+        char buf[format.size() * 2 + 1];
+        snprintf(buf, sizeof(buf), format.c_str(), std::forward<Args>(args)...);
+
+        Log(level, buf);
+    }
 };

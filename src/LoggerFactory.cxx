@@ -6,7 +6,6 @@
 #include <algorithm>
 #include <utility>
 #include <cassert>
-#include <ranges>
 
 struct LoggerInfo
 {
@@ -72,10 +71,13 @@ public:
     [[nodiscard]]
     bool IsEnabled(LogLevel level) const noexcept override
     {
-        return std::ranges::any_of(_loggers, [this,level](const LoggerInfo& logger)
-        {
-            return logger.IsEnabled(level, _category) && logger.Logger->IsEnabled(level);
-        });
+        for (const auto& log : _loggers)
+            if (log.IsEnabled(level, _category))
+            {
+                return true;
+            }
+
+        return false;
     }
 
     void AddLogger(LoggerInfo logger)
@@ -95,13 +97,9 @@ LoggerFactory::LoggerFactory(const std::vector<std::shared_ptr<ILoggerProvider>>
     : _providers(providers)
     , _options(std::move(options))
 {
-    bool hasDefaultRule = std::ranges::any_of(_options.Rules, [](const LoggerRule& rule)
-    {
-        return !rule.ProviderName && !rule.CategoryName;
-    });
-
     /* If no default rule provided, create one based on the min level */
-    if (!hasDefaultRule)
+    auto it = std::find_if(_options.Rules.begin(), _options.Rules.end(), [](auto& r){ return !r.ProviderName && !r.CategoryName; });
+    if (it == _options.Rules.end())
     {
         _options.Rules.emplace_back().MinLevel = _options.MinLevel;
     }
@@ -114,13 +112,13 @@ const LoggerRule *LoggerFactory::ApplyFilters(std::string_view Provider, std::st
         if (rule.ProviderName && rule.ProviderName.value() != Provider)
             return false;
 
-        if (rule.CategoryName && !Category.starts_with(rule.CategoryName.value()))
+        if (rule.CategoryName && Category.find(rule.CategoryName.value()) == std::string::npos)
             return false;
 
         return true;
     };
 
-    auto filter = std::ranges::find_if(_options.Rules, RuleFilter);
+    auto filter = std::find_if(_options.Rules.begin(), _options.Rules.end(), RuleFilter);
 
     /* There should always be at least one default rule. See LoggerFactory constructor() */
     assert(filter != _options.Rules.end());
