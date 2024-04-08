@@ -1,0 +1,13 @@
+cmake_minimum_required(VERSION 3.12)
+
+add_subdirectory(${PROJECT_SOURCE_DIR}/3rdparty/googletest ${CMAKE_BINARY_DIR}/googletest)
+
+add_executable(tests
+        LoggerFactory.tst.cpp
+        ConsoleProvider.tst.cxx
+        MemoryProvider.tst.cxx
+        FileProvider.tst.cxx
+)
+
+target_link_libraries(tests gtest gtest_main gmock ${PROJECT_NAME})
+set_property(TARGET tests PROPERTY CXX_STANDARD 20)
