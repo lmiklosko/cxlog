@@ -3,6 +3,10 @@
 #include <utility>
 #include <sstream>
 
+#ifdef __ANDROID__
+#include <android/log.h>
+#endif
+
 #include "cxlog/ConsoleProvider.hpp"
 
 class ConsoleLogger : public ILogger
@@ -25,7 +29,15 @@ public:
             ss << "\t" << property.first << ": " << property.second << "\n";
         }
 
+#ifdef __ANDROID__
+        if (&_target == &std::cout)
+        {
+            auto str = ss.str();
+            __android_log_write(LogLevelToAndroidLevel(level), _name.c_str(), str.c_str());
+        }
+#else
         _target << ss.str();
+#endif /* __ANDROID__ */
     }
 
     [[nodiscard]]
@@ -38,6 +50,20 @@ private:
     const std::string _name;
     std::ostream& _target;
     LogLevel _minLevel;
+
+#ifdef __ANDROID__
+    static int LogLevelToAndroidLevel(LogLevel level)
+    {
+        switch (level) {
+            case LogLevel::Trace: return ANDROID_LOG_VERBOSE;
+            case LogLevel::Debug: return ANDROID_LOG_DEBUG;
+            case LogLevel::Info: return ANDROID_LOG_INFO;
+            case LogLevel::Warning: return ANDROID_LOG_WARN;
+            case LogLevel::Error: return ANDROID_LOG_ERROR;
+            case LogLevel::Critical: return ANDROID_LOG_FATAL;
+        }
+    }
+#endif /* __ANDROID__ */
 };
 
 ConsoleProvider::ConsoleProvider(std::ostream &target, LogLevel minLevel)
