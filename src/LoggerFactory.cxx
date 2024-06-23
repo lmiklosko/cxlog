@@ -157,3 +157,11 @@ ILoggerFactory& LoggerFactory::AddProvider(std::shared_ptr<ILoggerProvider> prov
     return *this;
 }
 
+
+#include <iostream>
+#include "cxlog/ConsoleProvider.hpp"
+std::unique_ptr<ILoggerFactory> gLogFactory = std::make_unique<LoggerFactory>(
+    std::vector<std::shared_ptr<ILoggerProvider>> {
+        std::make_shared<ConsoleProvider>(std::cout)
+    }
+);
