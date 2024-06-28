@@ -9,6 +9,8 @@ project(cxlog
 option (ENABLE_PROVIDER_CONSOLE "Enable Console log provider support" ON)
 option (ENABLE_PROVIDER_FILE "Enables File log provider support" ON)
 option (ENABLE_PROVIDER_MEMORY "Enable Memory log provider support" ON)
+option (ENABLE_PROVIDER_SYSLOG "Enable Syslog provider support" ON)
+option (ENABLE_GLOG "Enable Android log provider support" ON)
 option (BUILD_TESTS "Build and run unit tests" OFF)
 
 add_library(${PROJECT_NAME}
@@ -16,6 +18,8 @@ add_library(${PROJECT_NAME}
     $<$<BOOL:${ENABLE_PROVIDER_CONSOLE}>:src/ConsoleProvider.cxx>
     $<$<BOOL:${ENABLE_PROVIDER_FILE}>:src/FileProvider.cxx>
     $<$<BOOL:${ENABLE_PROVIDER_MEMORY}>:src/MemoryProvider.cxx>
+    $<$<BOOL:${ENABLE_PROVIDER_SYSLOG}>:src/SyslogProvider.cxx>
+    $<$<BOOL:${ENABLE_GLOG}>:src/GLog.cxx>
 )
 
 target_include_directories(${PROJECT_NAME}
@@ -33,5 +37,6 @@ if (ENABLE_PROVIDER_ANDROID)
 endif ()
 
 if (BUILD_TESTS)
+    enable_testing()
     add_subdirectory(test)
 endif()

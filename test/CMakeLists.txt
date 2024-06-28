@@ -7,6 +7,10 @@ add_executable(tests
         ConsoleProvider.tst.cxx
         MemoryProvider.tst.cxx
         FileProvider.tst.cxx
+        GLog.tst.cxx
 )
 
 target_link_libraries(tests gtest gtest_main gmock ${PROJECT_NAME})
+
+
+add_test(NAME tests COMMAND tests)

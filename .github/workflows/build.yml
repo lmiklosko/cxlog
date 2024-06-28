@@ -1,0 +1,26 @@
+name: Build cxlog
+on:
+  push:
+    branches:
+      - '**'
+
+jobs:
+  build:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+    name: Build for ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: 'recursive'
+
+      - name: Build
+        run: |
+          cmake -Bbuild -S. -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_STANDARD=17 -DBUILD_TESTS=ON
+          cmake --build build
+
+      - name: Run tests
+        run: |
+          ctest --test-dir build --output --output-on-failure
