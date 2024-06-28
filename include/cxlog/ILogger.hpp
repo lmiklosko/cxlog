@@ -62,7 +62,7 @@ namespace details
             expo(std::forward<Args>(others)...);
         }
 
-        void expo()
+        inline void expo() noexcept
         {
         }
     };
@@ -85,7 +85,7 @@ public:
      *
      * @param level Severity level (see /ref LogLevel)
      * @param message Message content
-     * @param props extra data
+     * @param props extra data as key/value pairs (stringified)
      */
     virtual void Log(LogLevel level, const std::string& message, const std::map<std::string, std::string>& props = {}) = 0;  // NOLINT(google-default-arguments)
 
@@ -98,6 +98,14 @@ public:
     [[nodiscard]]
     virtual bool IsEnabled(LogLevel level) const noexcept = 0;
 
+    /* ~~~~~~~~~~~~~~~~~~~~ Helpers - non overridable functions ~~~~~~~~~~~~~~~~~~~~ */
+
+    /**
+     * Accepts general key/value pairs and stringifies them before passing to them to log function
+     * @param level Severity level (see /ref LogLevel)
+     * @param message Log message
+     * @param props extra data (generic key/value pairs)
+     */
     void Log(LogLevel level, const std::string& message, details::Props&& props)
     {
         Log(level, message, props.mapped);
@@ -120,4 +128,22 @@ public:
 
         Log(level, buf);
     }
+
+    inline void Trace(const std::string& message, const std::map<std::string, std::string>& props = {})
+    { Log(LogLevel::Trace, message, props); }
+
+    inline void Debug(const std::string& message, const std::map<std::string, std::string>& props = {})
+    { Log(LogLevel::Debug, message, props); }
+
+    inline void Info(const std::string& message, const std::map<std::string, std::string>& props = {})
+    { Log(LogLevel::Info, message, props); }
+
+    inline void Warning(const std::string& message, const std::map<std::string, std::string>& props = {})
+    { Log(LogLevel::Warning, message, props); }
+
+    inline void Error(const std::string& message, const std::map<std::string, std::string>& props = {})
+    { Log(LogLevel::Error, message, props); }
+
+    inline void Critical(const std::string& message, const std::map<std::string, std::string>& props = {})
+    { Log(LogLevel::Critical, message, props); }
 };

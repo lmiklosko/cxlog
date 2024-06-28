@@ -54,10 +54,10 @@ public:
 
         for (const auto& loggerInfo : _loggers)
         {
+            /* If provider is not enabled logger enabled for level/category combination, skip it */
             if (!loggerInfo.IsEnabled(level, _category))
                 continue;
 
-            /* Iterate over loggers. If enabled for current level, log message */
             try
             {
                 loggerInfo.Logger->Log(level, message, properties);
@@ -156,12 +156,3 @@ ILoggerFactory& LoggerFactory::AddProvider(std::shared_ptr<ILoggerProvider> prov
 
     return *this;
 }
-
-
-#include <iostream>
-#include "cxlog/ConsoleProvider.hpp"
-std::unique_ptr<ILoggerFactory> gLogFactory = std::make_unique<LoggerFactory>(
-    std::vector<std::shared_ptr<ILoggerProvider>> {
-        std::make_shared<ConsoleProvider>(std::cout)
-    }
-);

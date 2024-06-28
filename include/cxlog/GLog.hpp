@@ -3,4 +3,12 @@
 
 #include <memory>
 
-extern std::unique_ptr<ILoggerFactory> gLogFactory;
+namespace cxlog {
+    extern std::unique_ptr<ILoggerFactory>& gLogFactory;
+
+    static class GLogInitializer {
+    public:
+        GLogInitializer();
+        ~GLogInitializer();
+    } gLogInitializer;
+}
