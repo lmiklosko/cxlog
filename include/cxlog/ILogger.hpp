@@ -1,7 +1,11 @@
 #pragma once
+#include "cxlog/defs.hpp"
+
 #include <sstream>
 #include <string>
 #include <map>
+
+CXLOG_NAMESPACE_BEGIN
 
 /**
  * @brief Defines the severity of the log message
@@ -75,7 +79,7 @@ namespace details
  * ILoggerFactory. This interface serves as a bridge between ILoggerFactory and ILoggerProvider, providing end
  * user with a single interface for logging.
  */
-class ILogger
+class CXLOG_API ILogger
 {
 public:
     virtual ~ILogger() = default;
@@ -85,9 +89,8 @@ public:
      *
      * @param level Severity level (see /ref LogLevel)
      * @param message Message content
-     * @param props extra data as key/value pairs (stringified)
      */
-    virtual void Log(LogLevel level, const std::string& message, const std::map<std::string, std::string>& props = {}) = 0;  // NOLINT(google-default-arguments)
+    virtual void Log(LogLevel level, const std::string& message) = 0;
 
     /**
      * @brief Check if a given log level is enabled for this logger.
@@ -100,50 +103,40 @@ public:
 
     /* ~~~~~~~~~~~~~~~~~~~~ Helpers - non overridable functions ~~~~~~~~~~~~~~~~~~~~ */
 
-    /**
-     * Accepts general key/value pairs and stringifies them before passing to them to log function
-     * @param level Severity level (see /ref LogLevel)
-     * @param message Log message
-     * @param props extra data (generic key/value pairs)
-     */
-    void Log(LogLevel level, const std::string& message, details::Props&& props)
-    {
-        Log(level, message, props.mapped);
-    }
-
     template<typename... Args>
-    void Logc(LogLevel level, const std::string& message, Args&&...args)
+    void Log(LogLevel level, std::string format, Args&& ...args)
     {
-        std::stringstream ss;
-        ((ss << args << " ") << ...);
+        ([&, idx = 0ul](auto&& arg) mutable {
+            idx = format.find("{}", idx);
+            if (idx == std::string::npos)
+                return;
 
-        Log(level, message + ss.str());
+            std::stringstream ss;
+            ss << arg;
+
+            format.replace(idx, 2, ss.str());
+        }(std::forward<Args>(args)), ...);
+
+        Log(level, format);
     }
 
-    template<typename... Args>
-    void Logf(LogLevel level, const std::string& format, Args&& ...args)
-    {
-        char buf[format.size() * 2 + 1];
-        snprintf(buf, sizeof(buf), format.c_str(), std::forward<Args>(args)...);
+    template<typename... Args> inline void LogTrace(const std::string& message, Args&& ...args)
+    { Log(LogLevel::Trace, message, std::forward<Args>(args)...); }
 
-        Log(level, buf);
-    }
+    template<typename... Args> inline void LogDebug(const std::string& message, Args&& ...args)
+    { Log(LogLevel::Debug, message, std::forward<Args>(args)...); }
 
-    inline void Trace(const std::string& message, const std::map<std::string, std::string>& props = {})
-    { Log(LogLevel::Trace, message, props); }
+    template<typename... Args> inline void LogInfo(const std::string& message, Args&& ...args)
+    { Log(LogLevel::Info, message, std::forward<Args>(args)...); }
 
-    inline void Debug(const std::string& message, const std::map<std::string, std::string>& props = {})
-    { Log(LogLevel::Debug, message, props); }
+    template<typename... Args> inline void LogWarning(const std::string& message, Args&& ...args)
+    { Log(LogLevel::Warning, message, std::forward<Args>(args)...); }
 
-    inline void Info(const std::string& message, const std::map<std::string, std::string>& props = {})
-    { Log(LogLevel::Info, message, props); }
+    template<typename... Args> inline void LogError(const std::string& message, Args&& ...args)
+    { Log(LogLevel::Error, message, std::forward<Args>(args)...); }
 
-    inline void Warning(const std::string& message, const std::map<std::string, std::string>& props = {})
-    { Log(LogLevel::Warning, message, props); }
-
-    inline void Error(const std::string& message, const std::map<std::string, std::string>& props = {})
-    { Log(LogLevel::Error, message, props); }
-
-    inline void Critical(const std::string& message, const std::map<std::string, std::string>& props = {})
-    { Log(LogLevel::Critical, message, props); }
+    template<typename... Args> inline void LogCritical(const std::string& message, Args&& ...args)
+    { Log(LogLevel::Critical, message, std::forward<Args>(args)...); }
 };
+
+CXLOG_NAMESPACE_END

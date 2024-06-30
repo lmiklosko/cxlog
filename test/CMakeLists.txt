@@ -8,6 +8,7 @@ add_executable(tests
         MemoryProvider.tst.cxx
         FileProvider.tst.cxx
         GLog.tst.cxx
+        Logger.tst.cxx
 )
 
 target_link_libraries(tests gtest gtest_main gmock ${PROJECT_NAME})

@@ -1,9 +1,12 @@
 #pragma once
+#include "cxlog/defs.hpp"
+#include "cxlog/ILogger.hpp"
+
 #include <memory>
 #include <string>
 #include <string_view>
 
-#include "ILogger.hpp"
+CXLOG_NAMESPACE_BEGIN
 
 /**
  * Interface for logger provider
@@ -31,3 +34,5 @@ public:
      */
     virtual std::shared_ptr<ILogger> GetLogger(const std::string& name) = 0;
 };
+
+CXLOG_NAMESPACE_END

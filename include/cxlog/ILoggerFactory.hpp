@@ -1,8 +1,11 @@
 #pragma once
-#include "ILogger.hpp"
-#include "ILoggerProvider.hpp"
+#include "cxlog/defs.hpp"
+#include "cxlog/ILogger.hpp"
+#include "cxlog/ILoggerProvider.hpp"
 
 #include <memory>
+
+CXLOG_NAMESPACE_BEGIN
 
 /**
  * @brief Interface for logger factory
@@ -36,3 +39,5 @@ public:
      */
     virtual ILoggerFactory& AddProvider(std::shared_ptr<ILoggerProvider> provider) = 0;
 };
+
+CXLOG_NAMESPACE_END

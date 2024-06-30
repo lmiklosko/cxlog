@@ -8,6 +8,10 @@
 
 #include "cxlog/FileProvider.hpp"
 
+
+CXLOG_NAMESPACE_BEGIN
+
+
 static std::string MakeFileName(const std::filesystem::path& base)
 {
     std::time_t time = std::time({});
@@ -47,18 +51,13 @@ public:
     {
     }
 
-    void Log(LogLevel level, const std::string& message, const std::map<std::string, std::string>& properties) override
+    void Log(LogLevel level, const std::string& message) override
     {
         if (!IsEnabled(level))
             return;
 
         std::stringstream ss;
-
         ss << "[" << to_string(level) << "] " << _name << ": " << message << "\n";
-        for(const auto & property : properties)
-        {
-            ss << "\t" << property.first << ": " << property.second << "\n";
-        }
 
         if (_sharedData->opt.splitType == FileSplitType::NumMessages)
         {
@@ -127,3 +126,5 @@ std::shared_ptr<ILogger> FileProvider::GetLogger(const std::string& name)
 
     return l;
 }
+
+CXLOG_NAMESPACE_END

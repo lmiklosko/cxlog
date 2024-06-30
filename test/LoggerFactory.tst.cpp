@@ -4,13 +4,17 @@
  * @date 2024-01-17
  */
 
-#include "gtest/gtest.h"
 
 #include "cxlog/LoggerFactory.hpp"
 #include "cxlog/MemoryProvider.hpp"
 #include "cxlog/ConsoleProvider.hpp"
 
 #include "mocks/MockLogger.hpp"
+
+#include <gtest/gtest.h>
+#include <algorithm>
+
+using namespace cxlog;
 
 class LoggerFactoryTest : public ::testing::Test
 {
@@ -156,7 +160,7 @@ TEST_F(LoggerFactoryTest, LogMessage_MultipleProviders)
     EXPECT_FALSE(p1->LogLines().empty());
     EXPECT_FALSE(p2->LogLines().empty());
 }
-#include <syslog.h>
+
 /**
  * @brief Tests the selective log level filtering based on the category name
  * @expects to call Log() function on the first provider and not call it on the second provider

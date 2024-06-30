@@ -1,6 +1,8 @@
 #include "gtest/gtest.h"
 #include "cxlog/ConsoleProvider.hpp"
 
+using namespace cxlog;
+
 class ConsoleProviderTest : public ::testing::Test 
 {
 };

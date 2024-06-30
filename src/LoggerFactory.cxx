@@ -7,6 +7,10 @@
 #include <utility>
 #include <cassert>
 
+
+using namespace cxlog;
+
+
 struct LoggerInfo
 {
     std::shared_ptr<ILoggerProvider> Provider;
@@ -35,7 +39,7 @@ struct LoggerInfo
     }
 };
 
-class Logger : public ILogger
+class cxlog::Logger : public ILogger
 {
     std::vector<LoggerInfo> _loggers;
     std::string _category;
@@ -47,7 +51,7 @@ public:
     {
     }
 
-    void Log(LogLevel level, const std::string& message, const std::map<std::string, std::string>& properties) noexcept override
+    void Log(LogLevel level, const std::string& message) noexcept override
     {
         if (_loggers.empty())
             return;
@@ -60,7 +64,7 @@ public:
 
             try
             {
-                loggerInfo.Logger->Log(level, message, properties);
+                loggerInfo.Logger->Log(level, message);
             }
             catch (...)
             {

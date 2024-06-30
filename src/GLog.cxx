@@ -4,8 +4,8 @@
 
 #include <iostream>
 
-static std::aligned_storage_t<sizeof(std::unique_ptr<ILoggerFactory>),
-                              alignof(std::unique_ptr<ILoggerFactory>)> gLogFactoryStorage;
+static std::aligned_storage_t<sizeof(std::unique_ptr<cxlog::ILoggerFactory>),
+                              alignof(std::unique_ptr<cxlog::ILoggerFactory>)> gLogFactoryStorage;
 
 static int nUnits = 0;
 

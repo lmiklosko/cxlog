@@ -1,8 +1,9 @@
-#include "gtest/gtest.h"
-
-#include <ranges>
-
 #include "cxlog/MemoryProvider.hpp"
+
+#include <gtest/gtest.h>
+#include <algorithm>
+
+using namespace cxlog;
 
 class MemoryProviderTest : public ::testing::Test
 {

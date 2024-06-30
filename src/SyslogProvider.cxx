@@ -2,6 +2,10 @@
 
 #include <syslog.h>
 
+
+using namespace cxlog;
+
+
 static constexpr int LogLevelToSyslogLevel(LogLevel level)
 {
     switch (level)
@@ -22,15 +26,9 @@ class SyslogLogger : public ILogger
 {
 public:
     /* Forward message to syslog */
-    void Log(LogLevel level, const std::string& message, const std::map<std::string, std::string>& props) override
+    void Log(LogLevel level, const std::string& message) override
     {
-        std::stringstream ss;
-        for (const auto& [key, value] : props)
-        {
-            ss << "\n" << key << ": " << value;
-        }
-
-        syslog(static_cast<int>(LogLevelToSyslogLevel(level)), "%s%s", message.c_str(), ss.str().c_str());
+        syslog(static_cast<int>(LogLevelToSyslogLevel(level)), "%s", message.c_str());
     }
 
     /* Log mask is controlled directly by syslog, always return true */

@@ -9,7 +9,11 @@
 
 #include "cxlog/ConsoleProvider.hpp"
 
-class ConsoleLogger : public ILogger
+
+using namespace cxlog;
+
+
+class ConsoleLogger : public cxlog::ILogger
 {
 public:
     ConsoleLogger(std::string name, std::ostream& target, LogLevel minLevel)
@@ -19,15 +23,11 @@ public:
     {
     }
 
-    void Log(LogLevel level, const std::string& message, const std::map<std::string, std::string>& properties) override
+    void Log(LogLevel level, const std::string& message) override
     {
         std::ostringstream ss;
 
         ss << "[" << to_string(level) << "] " << _name << ": " << message << "\n";
-        for(const auto & property : properties)
-        {
-            ss << "\t" << property.first << ": " << property.second << "\n";
-        }
 
 #ifdef __ANDROID__
         if (&_target == &std::cout)

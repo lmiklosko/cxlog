@@ -3,6 +3,10 @@
 
 #include "cxlog/MemoryProvider.hpp"
 
+
+CXLOG_NAMESPACE_BEGIN
+
+
 struct MemoryProvider::SharedInfo
 {
     LogLevel minLevel;
@@ -21,18 +25,13 @@ public:
     {
     }
 
-    void Log(LogLevel level, const std::string& message, const std::map<std::string, std::string>& map) override
+    void Log(LogLevel level, const std::string& message) override
     {
         if (!IsEnabled(level))
             return;
 
         std::stringstream ss;
-
         ss << "[" << to_string(level) << "] " <<_name << ": " << message << "\n";
-        for(const auto & property : map)
-        {
-            ss << "    " << property.first << ": " << property.second << "\n";
-        }
 
         /* Remove the first line if we have too many */
         if (_info->logLines.size() >= _info->numLines)
@@ -84,3 +83,5 @@ std::string_view MemoryProvider::GetName() const
 {
     return "MemoryProvider";
 }
+
+CXLOG_NAMESPACE_END

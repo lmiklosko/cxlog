@@ -1,9 +1,12 @@
 #pragma once
+#include "cxlog/defs.hpp"
 #include "cxlog/ILoggerFactory.hpp"
 #include "cxlog/ILogger.hpp"
 
 #include <filesystem>
 #include <variant>
+
+CXLOG_NAMESPACE_BEGIN
 
 /**
  * Options for splitting log files
@@ -33,7 +36,7 @@ struct FileProviderOptions
  *
  * @brief Logs all messages to a new file located on the path specified by the constructor.
  */
-class FileProvider : public ILoggerProvider
+class CXLOG_API FileProvider : public ILoggerProvider
 {
 public:
     explicit FileProvider(std::filesystem::path where, FileProviderOptions opt = {});
@@ -59,3 +62,5 @@ private:
     std::map<std::string, std::shared_ptr<ILogger>> _loggers;
     std::shared_ptr<SharedData> _providerData;  /**< Shared data for all loggers created by this provider */
 };
+
+CXLOG_NAMESPACE_END
