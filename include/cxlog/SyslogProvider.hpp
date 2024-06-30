@@ -1,7 +1,10 @@
 #pragma once
+#include "cxlog/defs.hpp"
 #include "cxlog/ILoggerProvider.hpp"
 
-class SyslogProvider : public ILoggerProvider
+CXLOG_NAMESPACE_BEGIN
+
+class CXLOG_API SyslogProvider : public ILoggerProvider
 {
 public:
     /**
@@ -30,3 +33,5 @@ private:
     LogLevel _minLevel;
     std::map<std::string, std::shared_ptr<ILogger>> _loggers;
 };
+
+CXLOG_NAMESPACE_END

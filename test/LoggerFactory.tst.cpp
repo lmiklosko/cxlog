@@ -12,6 +12,8 @@
 
 #include "mocks/MockLogger.hpp"
 
+using namespace cxlog;
+
 class LoggerFactoryTest : public ::testing::Test
 {
 protected:
@@ -156,7 +158,7 @@ TEST_F(LoggerFactoryTest, LogMessage_MultipleProviders)
     EXPECT_FALSE(p1->LogLines().empty());
     EXPECT_FALSE(p2->LogLines().empty());
 }
-#include <syslog.h>
+
 /**
  * @brief Tests the selective log level filtering based on the category name
  * @expects to call Log() function on the first provider and not call it on the second provider

@@ -1,10 +1,14 @@
 #pragma once
+#include "cxlog/defs.hpp"
 #include "cxlog/ILoggerProvider.hpp"
+
 #include <deque>
 #include <vector>
 #include <map>
 
-class MemoryProvider : public ILoggerProvider
+CXLOG_NAMESPACE_BEGIN
+
+class CXLOG_API MemoryProvider : public ILoggerProvider
 {
 public:
     /**
@@ -34,3 +38,5 @@ private:
     std::shared_ptr<SharedInfo> _sharedInfo;
     std::map<std::string, std::shared_ptr<ILogger>> _loggers;
 };
+
+CXLOG_NAMESPACE_END

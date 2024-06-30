@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.12)
 
 project(cxlog
-        VERSION 0.0.1
+        VERSION 1.0.0
         DESCRIPTION "Highly configurable logging utility for c++"
         HOMEPAGE_URL ""
         LANGUAGES CXX)
@@ -10,7 +10,8 @@ option (ENABLE_PROVIDER_CONSOLE "Enable Console log provider support" ON)
 option (ENABLE_PROVIDER_FILE "Enables File log provider support" ON)
 option (ENABLE_PROVIDER_MEMORY "Enable Memory log provider support" ON)
 option (ENABLE_PROVIDER_SYSLOG "Enable Syslog provider support" ON)
-option (ENABLE_GLOG "Enable Android log provider support" ON)
+option (ENABLE_GLOG "Enable global logger factory" ON)
+option (EXPORT_CXLOG_SYMBOLS "Export symbols for shared library" ON)
 option (BUILD_TESTS "Build and run unit tests" OFF)
 
 add_library(${PROJECT_NAME}
@@ -23,17 +24,25 @@ add_library(${PROJECT_NAME}
 )
 
 target_include_directories(${PROJECT_NAME}
-    PUBLIC
-        include/
+    PUBLIC include/
 )
-set_property(TARGET ${PROJECT_NAME} PROPERTY CXX_STANDARD 17)
+
+target_compile_definitions(${PROJECT_NAME}
+    PRIVATE
+        $<$<BOOL:${EXPORT_CXLOG_SYMBOLS}>:CXLOG_EXPORT_SYMBOLS=1>
+        CXLOG_VERSION_MAJOR=${PROJECT_VERSION_MAJOR}
+        CXLOG_VERSION_MINOR=${PROJECT_VERSION_MINOR}
+        CXLOG_VERSION_PATCH=${PROJECT_VERSION_PATCH}
+)
 
 if (ENABLE_PROVIDER_ANDROID)
     if (NOT ANDROID)
         message(FATAL_ERROR "Cannot enable android provider if not targeting android")
     endif ()
 
-    target_link_libraries(${PROJECT_NAME} INTERFACE log)
+    target_link_libraries(${PROJECT_NAME}
+            INTERFACE log
+    )
 endif ()
 
 if (BUILD_TESTS)

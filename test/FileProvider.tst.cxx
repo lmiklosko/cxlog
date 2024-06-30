@@ -3,6 +3,8 @@
 
 #include <fstream>
 
+using namespace cxlog;
+
 class FileProviderTest : public ::testing::Test
 {
 protected:

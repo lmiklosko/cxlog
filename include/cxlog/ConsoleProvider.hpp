@@ -1,4 +1,5 @@
 #pragma once
+#include "cxlog/defs.hpp"
 #include "cxlog/ILogger.hpp"
 #include "cxlog/ILoggerProvider.hpp"
 
@@ -6,13 +7,15 @@
 #include <map>
 #include <memory>
 
+CXLOG_NAMESPACE_BEGIN
+
 /**
  * Console logger provider
  *
  * Represents the provider whose loggers will print all messages into the ostream provided in the constructor,
  * while being thread safe.
  */
-class ConsoleProvider : public ILoggerProvider
+class CXLOG_API ConsoleProvider : public ILoggerProvider
 {
 public:
     /**
@@ -43,3 +46,5 @@ private:
     std::ostream& _target;
     LogLevel _minLevel;
 };
+
+CXLOG_NAMESPACE_END

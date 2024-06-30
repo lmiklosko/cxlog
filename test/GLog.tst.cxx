@@ -10,7 +10,7 @@ TEST(GLog, Log)
     auto keeper = std::cout.rdbuf();
     std::cout.rdbuf(ss.rdbuf());
 
-    gLogFactory->CreateLogger("test")->Log(LogLevel::Info, "Hello, World!", {});
+    gLogFactory->CreateLogger("test")->Log(LogLevel::Info, "Hello, World!");
 
     std::cout.rdbuf(keeper);
 

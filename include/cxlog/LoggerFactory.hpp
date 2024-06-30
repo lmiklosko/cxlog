@@ -1,4 +1,5 @@
 #pragma once
+#include "cxlog/defs.hpp"
 #include "cxlog/ILoggerFactory.hpp"
 #include "cxlog/ILogger.hpp"
 
@@ -8,6 +9,8 @@
 #include <map>
 #include <functional>
 #include <optional>
+
+CXLOG_NAMESPACE_BEGIN
 
 /**
  * @brief Define rules for logging
@@ -34,7 +37,7 @@ struct LoggerOptions
 };
 
 class Logger;
-class LoggerFactory : public ILoggerFactory
+class CXLOG_API LoggerFactory : public ILoggerFactory
 {
 public:
     LoggerFactory();
@@ -75,3 +78,5 @@ private:
     std::map<std::string, std::shared_ptr<Logger>> _loggers;
     LoggerOptions _options;
 };
+
+CXLOG_NAMESPACE_END
