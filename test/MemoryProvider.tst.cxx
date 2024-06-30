@@ -1,6 +1,7 @@
 #include "cxlog/MemoryProvider.hpp"
 
 #include <gtest/gtest.h>
+#include <algorithm>
 
 using namespace cxlog;
 

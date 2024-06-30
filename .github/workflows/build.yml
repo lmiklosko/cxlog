@@ -55,7 +55,7 @@ jobs:
             cc: clang
             cxx: clang++
 
-    name: ${{ matrix.compiler }} on ${{ matrix.os }}
+    name: ${{ matrix.cxx }} on ${{ matrix.os }}
     env:
       CC: ${{ matrix.cc }}
       CXX: ${{ matrix.cxx }}

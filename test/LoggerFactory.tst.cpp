@@ -4,13 +4,15 @@
  * @date 2024-01-17
  */
 
-#include "gtest/gtest.h"
 
 #include "cxlog/LoggerFactory.hpp"
 #include "cxlog/MemoryProvider.hpp"
 #include "cxlog/ConsoleProvider.hpp"
 
 #include "mocks/MockLogger.hpp"
+
+#include <gtest/gtest.h>
+#include <algorithm>
 
 using namespace cxlog;
 
