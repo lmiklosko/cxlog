@@ -52,7 +52,7 @@ int main()
     auto logger = factory->CreateLogger("main");
 
     // Log a message
-    logger->Info("Hello, world!");
+    logger->LogInfo("Hello, world!");
 
     return 0;
 }
@@ -96,7 +96,7 @@ cxlog::LoggerFactory factory({
     }
 );
 
-factory.CreateLogger("main")->Info("This message will be logged to console only");
+factory.CreateLogger("main")->LogInfo("This message will be logged to console only");
 ```
 
 Rules allow to restrict messages for particular logger as well. This is particulary useful for debugging purposes, or
@@ -116,6 +116,6 @@ cxlog::LoggerFactory factory({
     }
 );
 
-factory.CreateLogger("main")->Info("This message will be logged to console");
-factory.CreateLogger("other")->Info("This message will not be logged");
+factory.CreateLogger("main")->LogInfo("This message will be logged to console");
+factory.CreateLogger("other")->LogInfo("This message will not be logged");
 ```

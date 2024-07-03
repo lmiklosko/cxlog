@@ -4,6 +4,7 @@
 #include <sstream>
 #include <string>
 #include <map>
+#include <chrono>
 
 CXLOG_NAMESPACE_BEGIN
 
@@ -40,35 +41,15 @@ static constexpr const char* to_string(LogLevel level) noexcept
 
 namespace details
 {
-    template <class T, template <class...> class Template>
-    struct is_specialization : std::false_type {};
-
-    template <template <class...> class Template, class... Args>
-    struct is_specialization<Template<Args...>, Template> : std::true_type {};
-
-    struct Props
+    template<typename... Args>
+    class IfConstexpr : public Args...
     {
-        std::map<std::string, std::string> mapped;
-
-        template<typename... Args, typename = std::enable_if_t<sizeof...(Args) != 0 && (is_specialization<Args, std::pair>{} || ...)>>
-        Props(Args&& ...args) // NOLINT(*-explicit-constructor)
-        {
-            expo(std::forward<Args>(args)...);
-        }
-
-        template<typename T, typename...Args>
-        void expo(T&& value, Args&&...others)
-        {
-            std::stringstream ss;
-            ss << value.second;
-
-            mapped[value.first] = ss.str();
-            expo(std::forward<Args>(others)...);
-        }
-
-        inline void expo() noexcept
+    public:
+        explicit IfConstexpr(Args&&... args)
+            : Args(std::forward<Args>(args))...
         {
         }
+        using Args::operator()...;
     };
 }
 
@@ -112,7 +93,17 @@ public:
                 return;
 
             std::stringstream ss;
-            ss << arg;
+            details::IfConstexpr(
+                [&ss](const std::chrono::system_clock::time_point& tp) { ss << tp.time_since_epoch().count(); },
+                [&ss](const std::chrono::steady_clock::time_point& tp) { ss << tp.time_since_epoch().count(); },
+                [&ss](const std::chrono::nanoseconds& ns) { ss << ns.count() << "ns"; },
+                [&ss](const std::chrono::microseconds & ns) { ss << ns.count() << "us"; },
+                [&ss](const std::chrono::milliseconds & ns) { ss << ns.count() << "ms"; },
+                [&ss](const std::chrono::seconds & ns) { ss << ns.count() << "s"; },
+                [&ss](const std::chrono::minutes & ns) { ss << ns.count() << "m"; },
+                [&ss](const std::chrono::hours & ns) { ss << ns.count() << "h"; },
+                [&ss](const auto& arg) { ss << arg; }
+            )(arg);
 
             format.replace(idx, 2, ss.str());
         }(std::forward<Args>(args)), ...);
