@@ -1,8 +1,8 @@
 cmake_minimum_required(VERSION 3.23)
 
 project(cxlog
-        VERSION 1.1.0
-        DESCRIPTION "Highly configurable logging utility for c++"
+        VERSION 1.1.3
+        DESCRIPTION "Multiplatform logging utility for C++"
         HOMEPAGE_URL "https://github.com/lmiklosko/cxlog"
         LANGUAGES CXX)
 
@@ -21,7 +21,7 @@ option (BUILD_TESTS "Build and run unit tests" OFF)
 if (CXLOG_FORCE_SHARED_LIB)
     add_library (${PROJECT_NAME} SHARED)
 else ()
-    # Do not explicitly specify STATIC, let the default decide
+    # Do not explicitly specify STATIC, let it be the default
     add_library (${PROJECT_NAME})
 endif ()
 
@@ -75,31 +75,37 @@ target_compile_features (${PROJECT_NAME}
         cxx_std_17
 )
 
-target_compile_options (${PROJECT_NAME}
-    PRIVATE
-        -fPIC
-        -ffunction-sections
-        -fdata-sections
-        -fvisibility=hidden
-        $<$<COMPILE_LANGUAGE:CXX>:-fvisibility-inlines-hidden>
-)
+get_target_property(target_type ${PROJECT_NAME} TYPE)
+if (target_type STREQUAL "SHARED_LIBRARY")
+    # Apple's CLANG does not support function-sections and data-sections
+    if (NOT APPLE)
+        target_compile_options (${PROJECT_NAME}
+            PRIVATE
+                -fPIC
+                -ffunction-sections
+                -fdata-sections
+                -fvisibility=hidden
+                $<$<COMPILE_LANGUAGE:CXX>:-fvisibility-inlines-hidden>
+        )
+        target_link_options (${PROJECT_NAME}
+                PRIVATE
+                -Wl,--gc-sections
+                -Wl,--strip-all
+        )
+    else ()
+        target_compile_options (${PROJECT_NAME}
+            PRIVATE
+                -fPIC
+                -fvisibility=hidden
+                $<$<COMPILE_LANGUAGE:CXX>:-fvisibility-inlines-hidden>
+        )
+    endif ()
+endif ()
 
-if (BUILD_SHARED_LIBS)
-    target_link_options (${PROJECT_NAME}
-        PRIVATE
-            ${CMAKE_SHARED_LIBRARY_LINK_CXX_FLAGS}
-    )
-endif (BUILD_SHARED_LIBS)
-
-target_link_options (${PROJECT_NAME}
-    PRIVATE
-        -Wl,--gc-sections
-        -Wl,--strip-all
-)
-
+# Android needs to link against log library for __android_log_write
 if (ANDROID)
     target_link_libraries(${PROJECT_NAME} PUBLIC log)
-endif (ANDROID)
+endif ()
 
 install(TARGETS ${PROJECT_NAME}
         FILE_SET HEADERS
