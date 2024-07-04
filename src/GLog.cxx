@@ -30,6 +30,6 @@ namespace cxlog {
     }
 
 
-    std::unique_ptr<ILoggerFactory>& gLogFactory =
+    CXLOG_API std::unique_ptr<ILoggerFactory>& gLogFactory =
             reinterpret_cast<std::unique_ptr<ILoggerFactory>&>(gLogFactoryStorage);
 }

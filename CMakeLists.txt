@@ -98,9 +98,7 @@ target_link_options (${PROJECT_NAME}
 )
 
 if (ANDROID)
-    target_link_libraries(${PROJECT_NAME}
-            INTERFACE log
-    )
+    target_link_libraries(${PROJECT_NAME} PUBLIC log)
 endif (ANDROID)
 
 install(TARGETS ${PROJECT_NAME}

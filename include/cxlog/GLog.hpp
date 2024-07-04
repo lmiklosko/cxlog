@@ -6,7 +6,7 @@
 
 CXLOG_NAMESPACE_BEGIN
 
-extern std::unique_ptr<ILoggerFactory>& gLogFactory;
+extern CXLOG_API std::unique_ptr<ILoggerFactory>& gLogFactory;
 
 static class CXLOG_API GLogInitializer {
 public:
