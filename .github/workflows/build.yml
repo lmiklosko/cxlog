@@ -67,7 +67,7 @@ jobs:
       - name: Build
         run: |
           cmake -Bbuild -S. -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_STANDARD=17 -DBUILD_TESTS=ON
-          cmake --build build
+          cmake --build build -j3
 
       - name: Run tests
         run: |

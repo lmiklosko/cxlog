@@ -20,6 +20,7 @@ option (BUILD_TESTS "Build and run unit tests" OFF)
 ###############
 if (CXLOG_FORCE_SHARED_LIB)
     add_library (${PROJECT_NAME} SHARED)
+    set(CXLOG_EXPORT_SYMBOLS ON)
 else ()
     # Do not explicitly specify STATIC, let it be the default
     add_library (${PROJECT_NAME})
@@ -77,27 +78,29 @@ target_compile_features (${PROJECT_NAME}
 
 get_target_property(target_type ${PROJECT_NAME} TYPE)
 if (target_type STREQUAL "SHARED_LIBRARY")
-    # Apple's CLANG does not support function-sections and data-sections
-    if (NOT APPLE)
-        target_compile_options (${PROJECT_NAME}
+    target_compile_options (${PROJECT_NAME}
             PRIVATE
-                -fPIC
-                -ffunction-sections
-                -fdata-sections
-                -fvisibility=hidden
-                $<$<COMPILE_LANGUAGE:CXX>:-fvisibility-inlines-hidden>
-        )
+            -fPIC
+            -fvisibility=hidden
+            $<$<COMPILE_LANGUAGE:CXX>:-fvisibility-inlines-hidden>
+            $<$<NOT:$<PLATFORM_ID:Darwin>>:-ffunction-sections>
+            $<$<NOT:$<PLATFORM_ID:Darwin>>:-fdata-sections>
+            $<$<CONFIG:Release>:-O2>
+    )
+
+    # Apple's CLANG does not support --gc-sections and --strip-all
+    if (NOT APPLE)
         target_link_options (${PROJECT_NAME}
-                PRIVATE
+            PRIVATE
                 -Wl,--gc-sections
                 -Wl,--strip-all
         )
     else ()
-        target_compile_options (${PROJECT_NAME}
-            PRIVATE
-                -fPIC
-                -fvisibility=hidden
-                $<$<COMPILE_LANGUAGE:CXX>:-fvisibility-inlines-hidden>
+        target_link_options (${PROJECT_NAME}
+            PRIVATE -Wl,-dead_strip
+        )
+        add_custom_command (TARGET ${PROJECT_NAME} POST_BUILD
+            COMMAND strip -S $<TARGET_FILE:${PROJECT_NAME}>
         )
     endif ()
 endif ()
