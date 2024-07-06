@@ -78,6 +78,7 @@ target_compile_features (${PROJECT_NAME}
 
 get_target_property(target_type ${PROJECT_NAME} TYPE)
 if (target_type STREQUAL "SHARED_LIBRARY")
+    # Compile with -fPIC, hide all symbols by default
     target_compile_options (${PROJECT_NAME}
             PRIVATE
             -fPIC
@@ -99,10 +100,12 @@ if (target_type STREQUAL "SHARED_LIBRARY")
         target_link_options (${PROJECT_NAME}
             PRIVATE -Wl,-dead_strip
         )
-        add_custom_command (TARGET ${PROJECT_NAME} POST_BUILD
-            COMMAND strip -S $<TARGET_FILE:${PROJECT_NAME}>
-        )
     endif ()
+
+    # Strip the shared library
+    add_custom_command (TARGET ${PROJECT_NAME} POST_BUILD
+        COMMAND ${CMAKE_STRIP} -S $<TARGET_FILE:${PROJECT_NAME}>
+    )
 endif ()
 
 # Android needs to link against log library for __android_log_write
