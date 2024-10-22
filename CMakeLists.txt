@@ -119,10 +119,7 @@ install(TARGETS ${PROJECT_NAME}
         INCLUDES DESTINATION include/${PROJECT_NAME}${PROJECT_VERSION_MAJOR}
 )
 
-# CONFIGURATION
-#################
-configure_file(${PROJECT_SOURCE_DIR}/cmake/template/config.cmake ${PROJECT_BINARY_DIR}/${PROJECT_NAME}Config.cmake @ONLY)
-install(FILES ${PROJECT_BINARY_DIR}/${PROJECT_NAME}Config.cmake DESTINATION lib/cmake/${PROJECT_NAME})
+install(FILES ${PROJECT_SOURCE_DIR}/cmake/cxlogConfig.cmake DESTINATION lib/cmake/${PROJECT_NAME})
 
 # TESTS
 #########
